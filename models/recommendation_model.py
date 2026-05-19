@@ -4,10 +4,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from database.db_config import koneksi
 
-# =========================
-# LOAD DATA DARI MYSQL
-# =========================
-
 query = """
 SELECT
     product.product_id,
@@ -27,36 +23,15 @@ ON sub_category.category_id = category.category_id
 """
 
 df = pd.read_sql(query, koneksi)
-
-# =========================
-# MEMBUAT TAG
-# =========================
-
 df['tags'] = (
     df['product_name'].astype(str) + ' ' +
     df['brand'].astype(str) + ' ' +
     df['category'].astype(str) + ' ' +
     df['sub_category'].astype(str)
 )
-
-# =========================
-# COUNT VECTORIZER
-# =========================
-
 cv = CountVectorizer(stop_words='english')
-
 vector = cv.fit_transform(df['tags']).toarray()
-
-# =========================
-# COSINE SIMILARITY
-# =========================
-
 similarity = cosine_similarity(vector)
-
-# =========================
-# FUNCTION RECOMMENDATION
-# =========================
-
 def get_recommendations(product_name):
 
     try:
