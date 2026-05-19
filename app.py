@@ -8,19 +8,11 @@ from routes.recommendation_routes import recommendation_bp
 from routes.history_routes import history_bp
 
 app = Flask(__name__)
-
-# =========================
 # REGISTER BLUEPRINT
-# =========================
-
 app.register_blueprint(search_bp)
 app.register_blueprint(recommendation_bp)
 app.register_blueprint(history_bp)
-
-# =========================
 # HOME
-# =========================
-
 @app.route('/')
 def home():
 
@@ -50,10 +42,6 @@ def home():
         'index.html',
         products=df.to_dict('records')
     )
-
-# =========================
 # RUN FLASK
-# =========================
-
 if __name__ == '__main__':
     app.run(debug=True)
