@@ -22,8 +22,13 @@ def home():
         product.product_name,
         product.brand,
         product.price,
+
         category.category,
-        sub_category.sub_category
+        sub_category.sub_category,
+
+        COUNT(order_items.product_id) AS total_purchased,
+
+        ROUND(AVG(users.rating), 1) AS average_rating
 
     FROM product
 
@@ -32,6 +37,19 @@ def home():
 
     JOIN category
     ON sub_category.category_id = category.category_id
+
+    LEFT JOIN order_items
+    ON product.product_id = order_items.product_id
+
+    LEFT JOIN orders
+    ON order_items.order_id = orders.order_id
+
+    LEFT JOIN users
+    ON orders.user_id = users.user_id
+
+    GROUP BY product.product_id
+
+    ORDER BY total_purchased DESC
 
     LIMIT 12
     """
