@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template
 import pandas as pd
 
@@ -6,12 +8,16 @@ from database.db_config import koneksi
 from routes.search_routers import search_bp
 from routes.recommendation_routes import recommendation_bp
 from routes.history_routes import history_bp
+from routes.purchase_routes import purchase_bp
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'toy-recommendation-dev-secret')
+
 # REGISTER BLUEPRINT
 app.register_blueprint(search_bp)
 app.register_blueprint(recommendation_bp)
 app.register_blueprint(history_bp)
+app.register_blueprint(purchase_bp)
 # HOME
 @app.route('/')
 def home():

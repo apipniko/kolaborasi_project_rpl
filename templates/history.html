@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase History</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-900">
+
+    <nav class="border-b border-white/10 bg-slate-950">
+        <div class="container mx-auto flex items-center justify-between px-4 py-4">
+            <h1 class="text-xl font-bold text-white md:text-2xl">
+                Purchase History
+            </h1>
+
+            <div class="flex items-center gap-2">
+                <a href="/" class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10">
+                    Home
+                </a>
+
+                <a href="/search" class="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-slate-200">
+                    Search
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 md:py-10">
+
+        {% if current_user %}
+
+        <section class="mb-6 overflow-hidden rounded-2xl bg-white shadow-lg">
+            <div class="grid gap-6 border-b border-slate-100 p-6 md:grid-cols-[1fr_auto] md:items-center">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wide text-emerald-600">
+                        Guest User
+                    </p>
+
+                    <h2 class="mt-2 text-3xl font-black text-slate-950">
+                        {{ current_user.name }}
+                    </h2>
+
+                    <div class="mt-4 flex flex-wrap gap-3 text-sm">
+                        <span class="rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700">
+                            ID: {{ current_user.user_id }}
+                        </span>
+
+                        <span class="rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700">
+                            Gender: {{ current_user.gender }}
+                        </span>
+
+                        <span class="rounded-full bg-emerald-50 px-4 py-2 font-semibold text-emerald-700">
+                            Interaction: {{ current_user.interaction_count if current_user.interaction_count else 0 }}x
+                        </span>
+                    </div>
+                </div>
+
+                <a
+                    href="/search"
+                    class="inline-flex rounded-xl bg-slate-950 px-5 py-3 text-center font-bold text-white hover:bg-slate-800"
+                >
+                    Belanja Lagi
+                </a>
+            </div>
+        </section>
+
+        <section class="overflow-hidden rounded-2xl bg-white shadow-lg">
+            <div class="grid gap-4 border-b border-slate-100 p-6 md:grid-cols-[1fr_auto] md:items-center">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-950">
+                        Riwayat Pembelian Kamu
+                    </h3>
+
+                    <p class="mt-1 text-slate-500">
+                        Pesanan baru masuk sebagai pending, lalu bisa dibatalkan atau ditandai sampai.
+                    </p>
+                </div>
+
+                <div class="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
+                    {{ histories|length }} Pesanan
+                </div>
+            </div>
+
+            {% if histories %}
+
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[980px] text-left">
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-6 py-4">Order ID</th>
+                            <th class="px-6 py-4">Produk</th>
+                            <th class="px-6 py-4">Brand</th>
+                            <th class="px-6 py-4">Tanggal</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Harga</th>
+                            <th class="px-6 py-4">Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100">
+                        {% for history in histories %}
+                        <tr class="align-top hover:bg-slate-50/70">
+                            <td class="px-6 py-5 font-bold text-slate-900">
+                                {{ history.order_id }}
+                            </td>
+
+                            <td class="px-6 py-5">
+                                <p class="font-bold text-slate-900">
+                                    {{ history.product_name }}
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-5 text-slate-500">
+                                {{ history.brand }}
+                            </td>
+
+                            <td class="px-6 py-5 text-slate-500">
+                                {{ history.order_date }}
+                            </td>
+
+                            <td class="px-6 py-5">
+                                {% if history.order_status == 'Pending' %}
+                                <span class="rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-700">
+                                    Pending
+                                </span>
+                                {% elif history.order_status == 'Canceled' %}
+                                <span class="rounded-full bg-rose-100 px-3 py-1 text-sm font-bold text-rose-700">
+                                    Canceled
+                                </span>
+                                {% elif history.order_status == 'Delivered' %}
+                                <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-bold text-sky-700">
+                                    Delivered
+                                </span>
+                                {% elif history.order_status == 'Rated' %}
+                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
+                                    Rated
+                                </span>
+                                {% else %}
+                                <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-bold text-slate-700">
+                                    {{ history.order_status }}
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="px-6 py-5 font-black text-slate-950">
+                                Rp {{ history.item_price }}
+                            </td>
+
+                            <td class="px-6 py-5">
+                                {% if history.order_status == 'Pending' %}
+                                <div class="flex flex-wrap gap-2">
+                                    <form action="{{ url_for('history.received_order', order_id=history.order_id) }}" method="POST">
+                                        <button
+                                            type="submit"
+                                            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+                                        >
+                                            Barang Sampai
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ url_for('history.cancel_order', order_id=history.order_id) }}" method="POST">
+                                        <button
+                                            type="submit"
+                                            class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-700"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                                {% elif history.order_status == 'Delivered' %}
+                                <form
+                                    action="{{ url_for('history.rate_order', order_id=history.order_id) }}"
+                                    method="POST"
+                                    class="flex flex-wrap gap-2"
+                                >
+                                    <select
+                                        name="rating"
+                                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-slate-500"
+                                    >
+                                        <option value="5">5.0</option>
+                                        <option value="4">4.0</option>
+                                        <option value="3">3.0</option>
+                                        <option value="2">2.0</option>
+                                        <option value="1">1.0</option>
+                                    </select>
+
+                                    <button
+                                        type="submit"
+                                        class="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+                                    >
+                                        Kirim Rating
+                                    </button>
+                                </form>
+                                {% elif history.order_status == 'Rated' %}
+                                <span class="text-sm font-semibold text-emerald-700">
+                                    Rating tersimpan
+                                </span>
+                                {% elif history.order_status == 'Canceled' %}
+                                <span class="text-sm font-semibold text-slate-400">
+                                    Pesanan dibatalkan
+                                </span>
+                                {% else %}
+                                <span class="text-sm font-semibold text-slate-400">
+                                    Tidak ada aksi
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <div class="p-12 text-center">
+                <h4 class="text-xl font-black text-slate-900">
+                    Belum ada pembelian
+                </h4>
+
+                <p class="mt-2 text-slate-500">
+                    Mulai checkout produk untuk melihat riwayat di sini.
+                </p>
+            </div>
+
+            {% endif %}
+        </section>
+
+        {% else %}
+
+        <section class="mx-auto max-w-2xl rounded-2xl bg-white p-10 text-center shadow-lg">
+            <p class="text-sm font-bold uppercase tracking-wide text-emerald-600">
+                Guest History
+            </p>
+
+            <h2 class="mt-2 text-3xl font-black text-slate-950">
+                Belum Ada Riwayat
+            </h2>
+
+            <p class="mx-auto mt-3 max-w-xl text-slate-500">
+                Setelah checkout dan isi data guest, pembelian kamu akan tampil di halaman ini.
+            </p>
+
+            <a
+                href="/search"
+                class="mt-6 inline-flex rounded-xl bg-slate-950 px-6 py-3 font-bold text-white hover:bg-slate-800"
+            >
+                Cari Produk
+            </a>
+        </section>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>
