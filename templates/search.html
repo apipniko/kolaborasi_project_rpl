@@ -35,73 +35,60 @@
         <form
             action="/search"
             method="GET"
-            class="bg-white p-6 rounded-2xl shadow-lg"
+            class="bg-white p-6 rounded-[28px] shadow-xl border border-gray-200"
         >
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
 
                 <!-- SEARCH INPUT -->
-                <input
-                    type="text"
-                    name="query"
-                    value="{{ query if query else '' }}"
-                    placeholder="Cari produk..."
-                    class="border border-gray-300 p-4 rounded-xl"
-                >
-
-                <!-- CATEGORY -->
-                <select
-                    name="category"
-                    class="border border-gray-300 p-4 rounded-xl"
-                >
-
-                    <option value="">
-                        Semua Category
-                    </option>
-
-                    {% for cat in categories %}
-
-                    <option
-                        value="{{ cat }}"
-                        {% if selected_category == cat %}selected{% endif %}
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-gray-600 mb-2" for="query">
+                        Cari Produk
+                    </label>
+                    <input
+                        id="query"
+                        type="text"
+                        name="query"
+                        value="{{ query if query else '' }}"
+                        placeholder="Cari produk..."
+                        class="w-full border border-gray-300 bg-gray-50 px-4 py-3 rounded-2xl shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     >
-                        {{ cat }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
+                </div>
 
                 <!-- SUB CATEGORY -->
-                <select
-                    name="sub_category"
-                    class="border border-gray-300 p-4 rounded-xl"
-                >
-
-                    <option value="">
-                        Semua Sub Category
-                    </option>
-
-                    {% for sub in sub_categories %}
-
-                    <option
-                        value="{{ sub }}"
-                        {% if selected_sub_category == sub %}selected{% endif %}
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-600 mb-2" for="sub_category">
+                        Pilih Sub Category
+                    </label>
+                    <select
+                        id="sub_category"
+                        name="sub_category"
+                        class="w-full border border-gray-300 bg-gray-50 px-4 py-3 rounded-2xl shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     >
-                        {{ sub }}
-                    </option>
 
-                    {% endfor %}
+                        {% for sub in sub_categories %}
 
-                </select>
+                        <option
+                            value="{{ sub }}"
+                            {% if selected_sub_category == sub %}selected{% endif %}
+                        >
+                            {{ sub }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+                </div>
 
                 <!-- BUTTON -->
-                <button
-                    type="submit"
-                    class="bg-blue-600 text-white rounded-xl"
-                >
-                    Filter
-                </button>
+                <div class="md:col-span-1">
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 text-white font-semibold rounded-2xl py-3 shadow-lg hover:bg-blue-700 transition"
+                    >
+                        Filter
+                    </button>
+                </div>
 
             </div>
 
@@ -122,28 +109,28 @@
                 {% if 'Vehicle' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/vehicle.jpg') }}"
+                    src="{{ url_for('static', filename='images/vehicle.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% elif 'Educational' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/educational.jpg') }}"
+                    src="{{ url_for('static', filename='images/educational.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% elif 'Doll' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/doll.jpg') }}"
+                    src="{{ url_for('static', filename='images/doll.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% else %}
 
                 <img
-                    src="{{ url_for('static', filename='images/default.jpg') }}"
+                    src="{{ url_for('static', filename='images/default.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 

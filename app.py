@@ -13,6 +13,20 @@ from routes.purchase_routes import purchase_bp
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'toy-recommendation-dev-secret')
 
+
+@app.template_filter('currency')
+def currency(value):
+    try:
+        amount = float(value)
+        if amount.is_integer():
+            formatted = f"{int(amount):,}".replace(',', '.')
+        else:
+            formatted = f"{amount:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        return f"Rp {formatted}"
+    except Exception:
+        return value
+
+
 # REGISTER BLUEPRINT
 app.register_blueprint(search_bp)
 app.register_blueprint(recommendation_bp)

@@ -76,15 +76,11 @@
                             class="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-900 outline-none focus:border-slate-500 focus:bg-white focus:ring-4 focus:ring-slate-100"
                             required
                         >
-                            <option value="">Pilih gender</option>
                             <option value="Laki-laki" {% if current_user and current_user.gender == 'Laki-laki' %}selected{% endif %}>
                                 Laki-laki
                             </option>
                             <option value="Perempuan" {% if current_user and current_user.gender == 'Perempuan' %}selected{% endif %}>
                                 Perempuan
-                            </option>
-                            <option value="Lainnya" {% if current_user and current_user.gender == 'Lainnya' %}selected{% endif %}>
-                                Lainnya
                             </option>
                         </select>
                     </label>

@@ -30,7 +30,8 @@ def search():
     ON sub_category.category_id = category.category_id
     """
 
-    df = pd.read_sql(sql, koneksi)
+    df_all = pd.read_sql(sql, koneksi)
+    df = df_all.copy()
 
     # =========================
     # FILTER SEARCH
@@ -71,11 +72,11 @@ def search():
     # =========================
 
     categories = sorted(
-        df['category'].dropna().unique()
+        df_all['category'].dropna().unique()
     )
 
     sub_categories = sorted(
-        df['sub_category'].dropna().unique()
+        df_all['sub_category'].dropna().unique()
     )
 
     return render_template(

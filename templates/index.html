@@ -102,28 +102,28 @@
                 {% if 'Vehicle' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/vehicle.jpg') }}"
+                    src="{{ url_for('static', filename='images/vehicle.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% elif 'Educational' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/educational.jpg') }}"
+                    src="{{ url_for('static', filename='images/educational.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% elif 'Doll' in product.sub_category %}
 
                 <img
-                    src="{{ url_for('static', filename='images/doll.jpg') }}"
+                    src="{{ url_for('static', filename='images/doll.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 
                 {% else %}
 
                 <img
-                    src="{{ url_for('static', filename='images/default.jpg') }}"
+                    src="{{ url_for('static', filename='images/default.svg') }}"
                     class="w-full h-56 object-cover"
                 >
 

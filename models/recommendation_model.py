@@ -1,65 +1,48 @@
-import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import pickle
+from pathlib import Path
 
-from database.db_config import koneksi
+MODEL_FILE = Path(__file__).parent / 'model_rekomendasi.pkl'
 
-query = """
-SELECT
-    product.product_id,
-    product.product_name,
-    product.brand,
-    product.price,
-    category.category,
-    sub_category.sub_category
+try:
+    with MODEL_FILE.open('rb') as f:
+        model_data = pickle.load(f)
+    df = model_data.get('data')
+    similarity = model_data.get('cosine_sim')
+    if df is None or similarity is None:
+        raise ValueError('Pickle model file does not contain expected keys: data, cosine_sim')
+except Exception:
+    df = None
+    similarity = None
 
-FROM product
 
-JOIN sub_category
-ON product.sub_category_id = sub_category.sub_category_id
-
-JOIN category
-ON sub_category.category_id = category.category_id
-"""
-
-df = pd.read_sql(query, koneksi)
-df['tags'] = (
-    df['product_name'].astype(str) + ' ' +
-    df['brand'].astype(str) + ' ' +
-    df['category'].astype(str) + ' ' +
-    df['sub_category'].astype(str)
-)
-cv = CountVectorizer(stop_words='english')
-vector = cv.fit_transform(df['tags']).toarray()
-similarity = cosine_similarity(vector)
 def get_recommendations(product_name):
+    if df is None or similarity is None:
+        return []
 
     try:
-
-        index = df[
-            df['product_name'] == product_name
-        ].index[0]
-
-        distances = sorted(
-            list(enumerate(similarity[index])),
-            reverse=True,
-            key=lambda x: x[1]
-        )
-
-        recommended_products = []
-
-        for i in distances[1:7]:
-
-            recommended_products.append({
-                'product_id': df.iloc[i[0]].product_id,
-                'product_name': df.iloc[i[0]].product_name,
-                'brand': df.iloc[i[0]].brand,
-                'price': df.iloc[i[0]].price,
-                'category': df.iloc[i[0]].category,
-                'sub_category': df.iloc[i[0]].sub_category
-            })
-
-        return recommended_products
-
-    except:
+        product_name_lower = str(product_name).strip().lower()
+        matches = df[df['product_name'].astype(str).str.lower() == product_name_lower]
+        index = matches.index[0]
+    except (IndexError, KeyError):
         return []
+
+    distances = sorted(
+        list(enumerate(similarity[index])),
+        reverse=True,
+        key=lambda x: x[1]
+    )
+
+    recommended_products = []
+
+    for i in distances[1:7]:
+        row = df.iloc[i[0]]
+        recommended_products.append({
+            'product_id': str(row['product_id']),
+            'product_name': str(row['product_name']),
+            'brand': str(row.get('brand', '')),
+            'price': float(row.get('price', 0) or 0),
+            'category': str(row.get('category', '')),
+            'sub_category': str(row.get('sub_category', ''))
+        })
+
+    return recommended_products
