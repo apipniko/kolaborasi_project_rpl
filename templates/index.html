@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommendation System</title>
+    <title>Toys Store</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,39 +13,23 @@
 <body class="bg-gray-100">
 
     <!-- NAVBAR -->
-    <nav class="{{ 'bg-rose-600' if is_admin else 'bg-blue-600' }} p-4 shadow-lg">
+    <nav class="bg-blue-600 p-4 shadow-lg">
 
         <div class="container mx-auto flex justify-between items-center">
 
-            <div>
-                <h1 class="text-white text-2xl font-bold">
-                    {% if is_admin %}Admin Dashboard{% else %}Toy Recommendation{% endif %}
-                </h1>
-                {% if is_admin %}
-                <span class="inline-flex rounded-full bg-white/20 px-3 py-1 text-sm text-white uppercase tracking-wide">
-                    Admin Mode
-                </span>
-                {% endif %}
-            </div>
+            <h1 class="text-white text-2xl font-bold">
+                Toys Store
+            </h1>
 
             <div class="flex gap-4">
 
                 <a href="/" class="text-white hover:text-gray-200">
-                    Home
+                    🏠 Home
                 </a>
 
                 <a href="/history" class="text-white hover:text-gray-200">
-                    History
+                    📜 History
                 </a>
-
-                {% if is_admin %}
-                <a href="{{ url_for('admin.product_list') }}" class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30">
-                    Produk Admin
-                </a>
-                <a href="{{ url_for('admin.logout') }}" class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30">
-                    Keluar Admin
-                </a>
-                {% endif %}
 
             </div>
 
@@ -59,18 +43,12 @@
         <div class="bg-white rounded-2xl shadow-lg p-10 text-center">
 
             <h1 class="text-5xl font-bold text-gray-800 mb-4">
-                {% if is_admin %}Admin Dashboard - Produk{% else %}Sistem Rekomendasi Produk Mainan{% endif %}
+                Toys Store
             </h1>
 
             <p class="text-gray-500 text-lg">
-                {% if is_admin %}Mode admin aktif. Kelola data produk atau kembali ke mode pembeli.{% else %}Cari produk mainan terbaik dan dapatkan rekomendasi produk serupa.{% endif %}
+                Cari produk mainan terbaik dan dapatkan rekomendasi produk serupa.
             </p>
-
-            {% if is_admin %}
-            <div class="mt-4 inline-flex items-center rounded-full bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700">
-                Admin mode aktif
-            </div>
-            {% endif %}
 
         </div>
 
@@ -108,103 +86,102 @@
     </section>
 
     <!-- PRODUCT -->
-    <section class="container mx-auto mt-10 px-4 mb-20">
-
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <section class="container mx-auto mt-12 px-4 mb-20">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
             {% for product in products %}
 
             <div
-                class="bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 duration-300 cursor-pointer"
+                class="bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 group"
                 data-url="{{ url_for('recommendation.recommend', product_name=product.product_name) }}"
                 onclick="window.location.href=this.dataset.url"
             >
 
-                <!-- IMAGE -->
-                {% if 'Vehicle' in product.sub_category %}
+                <!-- IMAGE CONTAINER -->
+                <div class="relative h-56 bg-gray-50 overflow-hidden">
+                    {% if 'Vehicle' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/vehicle.svg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/vehicle.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% elif 'Educational' in product.sub_category %}
+                    {% elif 'Educational' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/educational.svg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/educational.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% elif 'Doll' in product.sub_category %}
+                    {% elif 'Doll' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/doll.svg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/doll.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% else %}
+                    {% else %}
 
-                <img
-                    src="{{ url_for('static', filename='images/default.svg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/default.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% endif %}
+                    {% endif %}
+                </div>
 
                 <!-- CONTENT -->
-                <div class="p-5">
+                <div class="p-4">
 
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">
+                    <!-- PRODUCT NAME & BRAND -->
+                    <h3 class="text-base font-semibold text-gray-900 line-clamp-2 mb-1">
                         {{ product.product_name }}
-                    </h2>
-
-                    <p class="text-gray-500">
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">
                         {{ product.brand }}
                     </p>
-                    <div class="flex items-center gap-3 mt-3">
 
-                    <!-- RATING -->
-                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                        ⭐ {{ product.average_rating if product.average_rating else 0 }}
-                    </span>
-
-                    <!-- TOTAL PURCHASE -->
-                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
-                        🔥 Dibeli {{ product.total_purchased }}x
-                    </span>
-
+                    <!-- STATS ROW -->
+                    <div class="flex gap-2 mb-3 text-xs">
+                        <div class="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-md">
+                            <span>⭐</span>
+                            <span class="font-semibold text-yellow-700">{{ product.average_rating if product.average_rating else 0 }}</span>
+                        </div>
+                        <div class="flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md">
+                            <span>🔥</span>
+                            <span class="font-semibold text-red-700">{{ product.total_purchased }}</span>
+                        </div>
                     </div>
-                    <div class="mt-3">
 
-                        <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
+                    <!-- CATEGORY BADGES -->
+                    <div class="flex gap-2 flex-wrap mb-4 text-xs">
+                        <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md font-medium">
                             {{ product.category }}
                         </span>
-
-                    </div>
-
-                    <div class="mt-3">
-
-                        <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">
+                        <span class="bg-green-50 text-green-700 px-2 py-1 rounded-md font-medium">
                             {{ product.sub_category }}
                         </span>
-
                     </div>
 
-                    <h3 class="text-2xl font-bold text-blue-600 mt-5">
-                        $ {{ product.price }}
-                    </h3>
+                    <!-- DIVIDER -->
+                    <div class="border-t border-gray-100 pt-3 mb-3"></div>
 
+                    <!-- PRICE -->
+                    <h4 class="text-xl font-bold text-blue-600 mb-3">
+                        $ {{ product.price }}
+                    </h4>
+
+                    <!-- BUY BUTTON -->
                     <a
                         href="{{ url_for('purchase.buy', product_id=product.product_id) }}"
                         onclick="event.stopPropagation()"
+                        class="w-full"
                     >
-
                         <button
-                            class="mt-5 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700"
+                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm"
                         >
-                            Beli Produk
+                            🛒 Beli
                         </button>
-
                     </a>
 
                 </div>
