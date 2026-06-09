@@ -110,7 +110,14 @@
             >
 
                 <!-- IMAGE -->
-                {% if 'Vehicle' in product.sub_category %}
+                {% if product.image_filename %}
+
+                <img
+                    src="{{ url_for('static', filename='product_images/' ~ product.image_filename) }}"
+                    class="w-full h-56 object-cover"
+                >
+
+                {% elif 'Vehicle' in product.sub_category %}
 
                 <img
                     src="{{ url_for('static', filename='images/vehicle.svg') }}"
@@ -171,14 +178,6 @@
                             onclick="event.stopPropagation()"
                         >
                             Beli Produk
-                        </a>
-
-                        <a
-                            href="{{ url_for('recommendation.recommend', product_name=product.product_name) }}"
-                            class="w-full rounded-xl bg-blue-600 py-3 text-center font-semibold text-white hover:bg-blue-700"
-                            onclick="event.stopPropagation()"
-                        >
-                            Lihat Rekomendasi
                         </a>
 
                     </div>

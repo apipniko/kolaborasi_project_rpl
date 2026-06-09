@@ -39,7 +39,13 @@
 
             <div class="mt-4 grid gap-6 md:grid-cols-[280px_1fr] md:items-center">
                 <div class="overflow-hidden rounded-3xl bg-slate-50 shadow-sm">
-                    {% if 'Vehicle' in product.sub_category %}
+                    {% if product.image_filename %}
+                    <img
+                        src="{{ url_for('static', filename='product_images/' ~ product.image_filename) }}"
+                        alt="{{ product.product_name }}"
+                        class="h-64 w-full object-cover"
+                    >
+                    {% elif 'Vehicle' in product.sub_category %}
                     <img
                         src="{{ url_for('static', filename='images/vehicle.svg') }}"
                         alt="{{ product.product_name }}"
@@ -106,7 +112,13 @@
                     onclick="window.location.href=this.dataset.url"
                 >
                     <div class="h-48 overflow-hidden bg-slate-50">
-                        {% if 'Vehicle' in item.sub_category %}
+                        {% if item.image_filename %}
+                        <img
+                            src="{{ url_for('static', filename='product_images/' ~ item.image_filename) }}"
+                            alt="{{ item.product_name }}"
+                            class="h-full w-full object-cover"
+                        >
+                        {% elif 'Vehicle' in item.sub_category %}
                         <img
                             src="{{ url_for('static', filename='images/vehicle.svg') }}"
                             alt="{{ item.product_name }}"
@@ -157,14 +169,6 @@
                                 onclick="event.stopPropagation()"
                             >
                                 Beli Produk
-                            </a>
-
-                            <a
-                                href="{{ url_for('recommendation.recommend', product_name=item.product_name) }}"
-                                class="rounded-xl bg-blue-600 py-3 text-center font-semibold text-white hover:bg-blue-700"
-                                onclick="event.stopPropagation()"
-                            >
-                                Lihat Rekomendasi
                             </a>
                         </div>
                     </div>

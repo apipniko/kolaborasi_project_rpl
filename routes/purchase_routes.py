@@ -20,6 +20,7 @@ def get_product(product_id):
             product.product_name,
             product.brand,
             product.price,
+            product.image_filename,
             category.category,
             sub_category.sub_category
         FROM product

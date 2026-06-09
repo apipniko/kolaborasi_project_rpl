@@ -24,6 +24,7 @@ CREATE TABLE product (
     brand VARCHAR(100),
     price DECIMAL(10,2),
     sub_category_id INT,
+    image_filename VARCHAR(255),
     FOREIGN KEY (sub_category_id) REFERENCES sub_category(sub_category_id)
 );
 CREATE TABLE orders (

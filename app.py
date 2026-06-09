@@ -1,10 +1,11 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, session, url_for
 import pandas as pd
 
 from database.db_config import koneksi
 
+from routes.admin_routes import admin_bp
 from routes.search_routers import search_bp
 from routes.recommendation_routes import recommendation_bp
 from routes.history_routes import history_bp
@@ -12,6 +13,8 @@ from routes.purchase_routes import purchase_bp
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'toy-recommendation-dev-secret')
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'product_images')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 @app.template_filter('currency')
@@ -27,11 +30,28 @@ def currency(value):
         return value
 
 
+def ensure_image_column():
+    cursor = koneksi.cursor()
+    try:
+        cursor.execute(
+            "ALTER TABLE product ADD COLUMN IF NOT EXISTS image_filename VARCHAR(255);"
+        )
+        koneksi.commit()
+    except Exception:
+        pass
+    finally:
+        cursor.close()
+
+
+enable_image_column = ensure_image_column()
+
 # REGISTER BLUEPRINT
+app.register_blueprint(admin_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(recommendation_bp)
 app.register_blueprint(history_bp)
 app.register_blueprint(purchase_bp)
+
 # HOME
 @app.route('/')
 def home():
@@ -78,8 +98,61 @@ def home():
 
     return render_template(
         'index.html',
-        products=df.to_dict('records')
+        products=df.to_dict('records'),
+        is_admin=session.get('is_admin', False)
     )
+
+@app.route('/index_admin')
+def index_admin():
+    if not session.get('is_admin'):
+        return redirect(url_for('admin.login'))
+
+    query = """
+    SELECT
+        product.product_id,
+        product.product_name,
+        product.brand,
+        product.price,
+
+        category.category,
+        sub_category.sub_category,
+
+        COUNT(order_items.product_id) AS total_purchased,
+
+        ROUND(AVG(users.rating), 1) AS average_rating
+
+    FROM product
+
+    JOIN sub_category
+    ON product.sub_category_id = sub_category.sub_category_id
+
+    JOIN category
+    ON sub_category.category_id = category.category_id
+
+    LEFT JOIN order_items
+    ON product.product_id = order_items.product_id
+
+    LEFT JOIN orders
+    ON order_items.order_id = orders.order_id
+
+    LEFT JOIN users
+    ON orders.user_id = users.user_id
+
+    GROUP BY product.product_id
+
+    ORDER BY total_purchased DESC
+
+    LIMIT 12
+    """
+
+    df = pd.read_sql(query, koneksi)
+
+    return render_template(
+        'index.html',
+        products=df.to_dict('records'),
+        is_admin=True
+    )
+
 # RUN FLASK
 if __name__ == '__main__':
     app.run(debug=True)

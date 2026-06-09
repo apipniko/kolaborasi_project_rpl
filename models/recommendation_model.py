@@ -41,6 +41,7 @@ def get_recommendations(product_name):
             'product_name': str(row['product_name']),
             'brand': str(row.get('brand', '')),
             'price': float(row.get('price', 0) or 0),
+            'image_filename': str(row.get('image_filename', '')),
             'category': str(row.get('category', '')),
             'sub_category': str(row.get('sub_category', ''))
         })

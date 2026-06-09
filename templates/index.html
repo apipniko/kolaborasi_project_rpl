@@ -13,13 +13,20 @@
 <body class="bg-gray-100">
 
     <!-- NAVBAR -->
-    <nav class="bg-blue-600 p-4 shadow-lg">
+    <nav class="{{ 'bg-rose-600' if is_admin else 'bg-blue-600' }} p-4 shadow-lg">
 
         <div class="container mx-auto flex justify-between items-center">
 
-            <h1 class="text-white text-2xl font-bold">
-                Toy Recommendation
-            </h1>
+            <div>
+                <h1 class="text-white text-2xl font-bold">
+                    {% if is_admin %}Admin Dashboard{% else %}Toy Recommendation{% endif %}
+                </h1>
+                {% if is_admin %}
+                <span class="inline-flex rounded-full bg-white/20 px-3 py-1 text-sm text-white uppercase tracking-wide">
+                    Admin Mode
+                </span>
+                {% endif %}
+            </div>
 
             <div class="flex gap-4">
 
@@ -30,6 +37,15 @@
                 <a href="/history" class="text-white hover:text-gray-200">
                     History
                 </a>
+
+                {% if is_admin %}
+                <a href="{{ url_for('admin.product_list') }}" class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30">
+                    Produk Admin
+                </a>
+                <a href="{{ url_for('admin.logout') }}" class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30">
+                    Keluar Admin
+                </a>
+                {% endif %}
 
             </div>
 
@@ -43,12 +59,18 @@
         <div class="bg-white rounded-2xl shadow-lg p-10 text-center">
 
             <h1 class="text-5xl font-bold text-gray-800 mb-4">
-                Sistem Rekomendasi Produk Mainan
+                {% if is_admin %}Admin Dashboard - Produk{% else %}Sistem Rekomendasi Produk Mainan{% endif %}
             </h1>
 
             <p class="text-gray-500 text-lg">
-                Cari produk mainan terbaik dan dapatkan rekomendasi produk serupa.
+                {% if is_admin %}Mode admin aktif. Kelola data produk atau kembali ke mode pembeli.{% else %}Cari produk mainan terbaik dan dapatkan rekomendasi produk serupa.{% endif %}
             </p>
+
+            {% if is_admin %}
+            <div class="mt-4 inline-flex items-center rounded-full bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700">
+                Admin mode aktif
+            </div>
+            {% endif %}
 
         </div>
 
