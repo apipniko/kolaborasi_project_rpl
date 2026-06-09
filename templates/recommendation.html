@@ -100,7 +100,11 @@
 
                 {% for item in recommendations %}
 
-                <div class="overflow-hidden rounded-2xl bg-white shadow-lg">
+                <div
+                    class="overflow-hidden rounded-2xl bg-white shadow-lg hover:scale-105 duration-300 cursor-pointer"
+                    data-url="{{ url_for('recommendation.recommend', product_name=item.product_name) }}"
+                    onclick="window.location.href=this.dataset.url"
+                >
                     <div class="h-48 overflow-hidden bg-slate-50">
                         {% if 'Vehicle' in item.sub_category %}
                         <img
@@ -150,6 +154,7 @@
                             <a
                                 href="{{ url_for('purchase.buy', product_id=item.product_id) }}"
                                 class="rounded-xl bg-green-600 py-3 text-center font-semibold text-white hover:bg-green-700"
+                                onclick="event.stopPropagation()"
                             >
                                 Beli Produk
                             </a>
@@ -157,6 +162,7 @@
                             <a
                                 href="{{ url_for('recommendation.recommend', product_name=item.product_name) }}"
                                 class="rounded-xl bg-blue-600 py-3 text-center font-semibold text-white hover:bg-blue-700"
+                                onclick="event.stopPropagation()"
                             >
                                 Lihat Rekomendasi
                             </a>

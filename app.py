@@ -22,7 +22,7 @@ def currency(value):
             formatted = f"{int(amount):,}".replace(',', '.')
         else:
             formatted = f"{amount:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        return f"Rp {formatted}"
+        return f"$ {formatted}"
     except Exception:
         return value
 
