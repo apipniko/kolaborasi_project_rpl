@@ -56,33 +56,42 @@
 
     <!-- SEARCH -->
     <section class="container mx-auto mt-10 px-4">
-
         <form
             action="/search"
             method="GET"
             class="bg-white p-6 rounded-2xl shadow-lg"
         >
-
             <div class="flex gap-4">
-
-                <input
-                    type="text"
-                    name="query"
-                    placeholder="Cari produk..."
-                    class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+                <div class="relative w-full">
+                    <input
+                        type="text"
+                        id="search-bar"
+                        name="query"
+                        placeholder="Cari produk..."
+                        autocomplete="off"
+                        class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    
+                    <div 
+                        id="suggestion-dropdown" 
+                        class="absolute left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl hidden z-50 overflow-hidden max-h-80 overflow-y-auto"
+                    >
+                        <div class="bg-blue-50 px-4 py-2 text-xs font-bold text-blue-600 border-b border-gray-100 uppercase tracking-wider">
+                            Rekomendasi Alternatif:
+                        </div>
+                        <ul id="suggestion-list" class="divide-y divide-gray-100">
+                            </ul>
+                    </div>
+                </div>
 
                 <button
                     type="submit"
-                    class="bg-blue-600 text-white px-8 rounded-xl hover:bg-blue-700"
+                    class="bg-blue-600 text-white px-8 rounded-xl hover:bg-blue-700 transition duration-300"
                 >
                     Search
                 </button>
-
             </div>
-
         </form>
-
     </section>
 
     <!-- PRODUCT -->
@@ -173,7 +182,7 @@
                         <button
                             class="mt-5 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700"
                         >
-                            Lihat Rekomendasi
+                            Beli
                         </button>
 
                     </a>
@@ -187,6 +196,6 @@
         </div>
 
     </section>
-
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>

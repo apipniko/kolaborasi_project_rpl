@@ -1,65 +1,104 @@
+import os
+import pickle
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
 from database.db_config import koneksi
 
-query = """
-SELECT
-    product.product_id,
-    product.product_name,
-    product.brand,
-    product.price,
-    category.category,
-    sub_category.sub_category
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'model_rekomendasi.pkl')
 
-FROM product
 
-JOIN sub_category
-ON product.sub_category_id = sub_category.sub_category_id
+with open(MODEL_PATH, 'rb') as file:
+    model_data = pickle.load(file)
 
-JOIN category
-ON sub_category.category_id = category.category_id
-"""
 
-df = pd.read_sql(query, koneksi)
-df['tags'] = (
-    df['product_name'].astype(str) + ' ' +
-    df['brand'].astype(str) + ' ' +
-    df['category'].astype(str) + ' ' +
-    df['sub_category'].astype(str)
-)
-cv = CountVectorizer(stop_words='english')
-vector = cv.fit_transform(df['tags']).toarray()
-similarity = cosine_similarity(vector)
-def get_recommendations(product_name):
+cosine_sim = model_data['cosine_sim']
+df = model_data['data']
 
-    try:
+def get_recommendations(nama_produk):
+    """
+    Fungsi untuk mendapatkan top 5 rekomendasi berdasarkan nama produk.
+    """
+    
+    
+    if nama_produk not in df['product_name'].values:
+        return []  # Kembalikan list kosong jika produk tidak ditemukan di data
 
-        index = df[
-            df['product_name'] == product_name
-        ].index[0]
+    # 1. Ambil index dari produk yang dicari
+    idx = df[df['product_name'] == nama_produk].index[0]
 
-        distances = sorted(
-            list(enumerate(similarity[index])),
-            reverse=True,
-            key=lambda x: x[1]
-        )
+    # 2. Ambil semua skor kemiripan (cosine similarity) untuk produk ini
+    # enumerate digunakan untuk memasangkan index dengan skornya -> (index, skor)
+    sim_scores = list(enumerate(cosine_sim[idx]))
 
-        recommended_products = []
+    # 3. Urutkan berdasarkan skor tertinggi (index ke-1 adalah skor)
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-        for i in distances[1:7]:
+    # 4. Ambil 5 produk teratas
+    # Kita mulai dari index 1 (1:6) karena index 0 pasti produk itu sendiri (skornya 1.0)
+    sim_scores = sim_scores[1:6]
 
-            recommended_products.append({
-                'product_id': df.iloc[i[0]].product_id,
-                'product_name': df.iloc[i[0]].product_name,
-                'brand': df.iloc[i[0]].brand,
-                'price': df.iloc[i[0]].price,
-                'category': df.iloc[i[0]].category,
-                'sub_category': df.iloc[i[0]].sub_category
-            })
+    # 5. Dapatkan index baris dari 5 produk rekomendasi tersebut
+    product_indices = [i[0] for i in sim_scores]
 
-        return recommended_products
+    # 6. Ambil baris data produk tersebut dari dataframe dan ubah ke bentuk list of dictionary (JSON friendly)
+    rekomendasi = df.iloc[product_indices].to_dict('records')
 
-    except:
+    return rekomendasi
+
+
+# ... (kode load pickle yang sebelumnya sudah ada tetap biarkan) ...
+
+def get_search_suggestions(keyword):
+    """
+    Fungsi untuk mencari produk alternatif saat pengguna mengetik kata kunci.
+    """
+    if not keyword.strip():
         return []
+
+    # 1. Cari produk yang namanya mengandung kata kunci (tidak sensitif huruf besar/kecil)
+    # Ganti 'product_name' dengan nama kolom produk di dataframe Anda jika berbeda
+    matches = df[df['product_name'].str.contains(keyword, case=False, na=False)]
+
+    if matches.empty:
+        return []
+
+    # 2. Ambil produk pertama yang paling cocok sebagai acuan
+    produk_acuan = matches.iloc[0]['product_name']
+
+    # 3. Ambil rekomendasi alternatif untuk produk acuan tersebut
+    # Menggunakan fungsi get_recommendations yang sudah kita buat sebelumnya
+    alternatif_produk = get_recommendations(produk_acuan)
+
+    return alternatif_produk
+
+
+
+def get_popular_products():
+
+    query = """
+    SELECT
+        product.product_id,
+        product.product_name,
+        product.brand,
+        product.price,
+        category.category,
+        sub_category.sub_category,
+        COUNT(order_items.product_id) AS total_purchased,
+        ROUND(AVG(users.rating),1) AS average_rating
+    FROM product
+    JOIN sub_category
+        ON product.sub_category_id = sub_category.sub_category_id
+    JOIN category
+        ON sub_category.category_id = category.category_id
+    LEFT JOIN order_items
+        ON product.product_id = order_items.product_id
+    LEFT JOIN orders
+        ON order_items.order_id = orders.order_id
+    LEFT JOIN users
+        ON orders.user_id = users.user_id
+    GROUP BY product.product_id
+    ORDER BY total_purchased DESC
+    LIMIT 12
+    """
+
+    return pd.read_sql(query, koneksi)

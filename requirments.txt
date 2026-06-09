@@ -1,5 +1,0 @@
-flask
-pandas
-scikit-learn
-mysql-connector-python
-numpy
