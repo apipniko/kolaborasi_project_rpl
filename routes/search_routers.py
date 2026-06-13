@@ -7,78 +7,70 @@ search_bp = Blueprint('search', __name__)
 
 @search_bp.route('/search')
 def search():
+    query = request.args.get('query', '').strip()
+    category = request.args.get('category', '').strip()
+    sub_category = request.args.get('sub_category', '').strip()
+    sort_by = request.args.get('sort', 'relevant')
 
-    query = request.args.get('query')
-    category = request.args.get('category')
-    sub_category = request.args.get('sub_category')
-
+    # Query disesuaikan & LIMIT dihapus agar filter/sort bisa berjalan dinamis
     sql = """
     SELECT
         product.product_id,
         product.product_name,
         product.brand,
         product.price,
-        product.image_filename,
         category.category,
-        sub_category.sub_category
-
+        sub_category.sub_category,
+        COUNT(order_items.product_id) AS total_purchased,
+        ROUND(AVG(users.rating), 1) AS average_rating
     FROM product
-
-    JOIN sub_category
-    ON product.sub_category_id = sub_category.sub_category_id
-
-    JOIN category
-    ON sub_category.category_id = category.category_id
+    JOIN sub_category ON product.sub_category_id = sub_category.sub_category_id
+    JOIN category ON sub_category.category_id = category.category_id
+    LEFT JOIN order_items ON product.product_id = order_items.product_id
+    LEFT JOIN orders ON order_items.order_id = orders.order_id
+    LEFT JOIN users ON orders.user_id = users.user_id
+    GROUP BY 
+        product.product_id, 
+        product.product_name, 
+        product.brand, 
+        product.price, 
+        category.category, 
+        sub_category.sub_category
     """
 
     df_all = pd.read_sql(sql, koneksi)
     df = df_all.copy()
 
     # =========================
-    # FILTER SEARCH
+    # FILTER LOGIC
     # =========================
-
-    if query and query != '':
-
-        df = df[
-            df['product_name'].str.contains(
-                query,
-                case=False,
-                na=False
-            )
-        ]
+    if query:
+        df = df[df['product_name'].str.contains(query, case=False, na=False)]
+    if category:
+        df = df[df['category'] == category]
+    if sub_category:
+        df = df[df['sub_category'] == sub_category]
 
     # =========================
-    # FILTER CATEGORY
+    # SORTING LOGIC (PANDAS)
     # =========================
+    if sort_by == 'highest_rating':
+        df = df.sort_values(by='average_rating', ascending=False, na_position='last')
+    elif sort_by == 'lowest':
+        df = df.sort_values(by='price', ascending=True)
+    elif sort_by == 'most_purchased':
+        df = df.sort_values(by='total_purchased', ascending=False)
+    else:  # 'relevant' / default
+        df = df.sort_values(by='total_purchased', ascending=False)
 
-    if category and category != '':
-
-        df = df[
-            df['category'] == category
-        ]
-
-    # =========================
-    # FILTER SUB CATEGORY
-    # =========================
-
-    if sub_category and sub_category != '':
-
-        df = df[
-            df['sub_category'] == sub_category
-        ]
+    # Optional: Batasi tampilan maksimal 12 produk SETELAH filter & sort
+    # df = df.head(12)
 
     # =========================
-    # DATA FILTER DROPDOWN
+    # DROPDOWN OPTIONS
     # =========================
-
-    categories = sorted(
-        df_all['category'].dropna().unique()
-    )
-
-    sub_categories = sorted(
-        df_all['sub_category'].dropna().unique()
-    )
+    categories = sorted(df_all['category'].dropna().unique())
+    sub_categories = sorted(df_all['sub_category'].dropna().unique())
 
     return render_template(
         'search.html',

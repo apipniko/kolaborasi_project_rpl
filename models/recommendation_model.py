@@ -47,3 +47,27 @@ def get_recommendations(product_name):
         })
 
     return recommended_products
+
+
+def get_search_suggestions(keyword):
+    """
+    Fungsi untuk mencari produk alternatif saat pengguna mengetik kata kunci.
+    """
+    if not keyword.strip():
+        return []
+
+    # 1. Cari produk yang namanya mengandung kata kunci (tidak sensitif huruf besar/kecil)
+    # Ganti 'product_name' dengan nama kolom produk di dataframe Anda jika berbeda
+    matches = df[df['product_name'].str.contains(keyword, case=False, na=False)]
+
+    if matches.empty:
+        return []
+
+    # 2. Ambil produk pertama yang paling cocok sebagai acuan
+    produk_acuan = matches.iloc[0]['product_name']
+
+    # 3. Ambil rekomendasi alternatif untuk produk acuan tersebut
+    # Menggunakan fungsi get_recommendations yang sudah kita buat sebelumnya
+    alternatif_produk = get_recommendations(produk_acuan)
+
+    return alternatif_produk

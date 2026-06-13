@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template,request, jsonify
 
 from database.db_config import koneksi
-from models.recommendation_model import get_recommendations
+from models.recommendation_model import get_recommendations, get_search_suggestions
 
 recommendation_bp = Blueprint(
     'recommendation',
@@ -47,3 +47,15 @@ def recommend(product_name):
         product_name=product_name,
         recommendations=recommendations
     )
+
+
+@recommendation_bp.route('/api/suggest', methods=['GET'])
+def suggest_products():
+    # Ambil parameter 'q' dari URL (contoh: /api/suggest?q=puzzle)
+    query = request.args.get('q', '')
+    
+    # Dapatkan daftar produk alternatif dari model
+    hasil_rekomendasi = get_search_suggestions(query)
+    
+    # Kembalikan hasilnya dalam bentuk JSON agar bisa dibaca JavaScript
+    return jsonify(hasil_rekomendasi)
