@@ -1,11 +1,18 @@
 // Store all products data
 let allProducts = [];
-let currentSort = 'latest';
+let currentSort = 'relevant';
 let currentFilters = {
     availability: [],
     sub_category: [],
     category: []
 };
+
+function normalizeFilterValue(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_');
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -24,9 +31,9 @@ function loadProducts() {
     const productCards = document.querySelectorAll('.product-card');
     allProducts = Array.from(productCards).map(card => ({
         element: card,
-        availability: card.dataset.availability,
-        subCategory: card.dataset.subCategory,
-        category: card.dataset.category,
+        availability: normalizeFilterValue(card.dataset.availability),
+        subCategory: normalizeFilterValue(card.dataset.subCategory),
+        category: normalizeFilterValue(card.dataset.category),
         price: parseFloat(card.dataset.price) || 0,
         rating: parseFloat(card.dataset.rating) || 0,
         purchased: parseInt(card.dataset.purchased) || 0,
@@ -41,7 +48,7 @@ function setupFilterListeners() {
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const filterType = this.dataset.filter;
-            const value = this.value;
+            const value = normalizeFilterValue(this.value);
             
             if (this.checked) {
                 if (!currentFilters[filterType].includes(value)) {
@@ -115,14 +122,14 @@ function setupResetListener() {
         // Reset search
         document.getElementById('query').value = '';
         
-        // Reset sort to latest
-        currentSort = 'latest';
+        // Reset sort to relevant
+        currentSort = 'relevant';
         document.querySelectorAll('.sort-btn').forEach(btn => {
-            if (btn.dataset.sort === 'latest') {
+            if (btn.dataset.sort === 'relevant') {
                 btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
-                btn.classList.add('bg-gray-800', 'text-white', 'border-gray-800');
+                btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
             } else {
-                btn.classList.remove('bg-gray-800', 'text-white', 'border-gray-800');
+                btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
                 btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
             }
         });

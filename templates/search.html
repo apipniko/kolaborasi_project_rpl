@@ -121,26 +121,6 @@
                 </div>
 
                 <div class="border-t border-gray-200 my-4"></div>
-
-                <!-- Category Filter -->
-                <div class="mb-4">
-                    <h4 class="font-semibold text-gray-800 mb-3">Category</h4>
-                    <div class="space-y-2 max-h-48 overflow-y-auto">
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="filter-checkbox" data-filter="category" value="action_figure">
-                            <span class="text-gray-600 group-hover:text-gray-800 transition">Action Figure</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="filter-checkbox" data-filter="category" value="merchandise">
-                            <span class="text-gray-600 group-hover:text-gray-800 transition">Kendaraan</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="filter-checkbox" data-filter="category" value="card">
-                            <span class="text-gray-600 group-hover:text-gray-800 transition">Edukasi</span>
-                        </label>
-                        
-                    </div>
-                </div>
             </div>
         </aside>
 
@@ -180,7 +160,7 @@
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {% for product in products %}
                 <div class="product-card bg-[#FDF8EC] rounded-xl border-2 border-gray-800 overflow-hidden hover:shadow-xl transition duration-300 cursor-pointer"
-                        data-availability="..."
+                        data-availability="{% if 'pre-order' in product.sub_category.lower() %}pre_order{% else %}ready_stock{% endif %}"
                         data-sub-category="{{ product.sub_category|lower|replace(' ', '_') }}"
                         data-category="{{ product.category|lower|replace(' ', '_') }}"
                         data-price="{{ product.price }}"
