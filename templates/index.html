@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommendation System</title>
+    <title>Toys Store</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,17 +18,17 @@
         <div class="container mx-auto flex justify-between items-center">
 
             <h1 class="text-white text-2xl font-bold">
-                Toy Recommendation
+                Toys Store
             </h1>
 
             <div class="flex gap-4">
 
                 <a href="/" class="text-white hover:text-gray-200">
-                    Home
+                    🏠 Home
                 </a>
 
                 <a href="/history" class="text-white hover:text-gray-200">
-                    History
+                    📜 History
                 </a>
 
             </div>
@@ -38,144 +38,177 @@
     </nav>
 
     <!-- HEADER -->
-    <section class="container mx-auto mt-10 px-4">
+<section class="relative container mx-auto  px-4 overflow-visible z-10">
+    
+    <!-- Decorative Background Blobs (Animasi Halus) -->
+    <div class="absolute top-0 left-1/4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute top-0 right-1/4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-1/3 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-10 text-center">
+    <!-- Main Card -->
+    <div class="relative  backdrop-blur-xl rounded-3xl shadow-2xl shadow-indigo-100/50 border border-white/60 p-8 md:p-14 text-center transition-all duration-500 hover:shadow-indigo-200/60 hover:-translate-y-1">
+        
+        <!-- Gradient Typography Heading -->
+        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
+            Selamat Datang di 
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">
+                    Toko Mainan Anak
+            </span>
+        </h1>
 
-            <h1 class="text-5xl font-bold text-gray-800 mb-4">
-                Sistem Rekomendasi Produk Mainan
-            </h1>
+        <!-- Improved Subtitle -->
+        <p class="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            Jelajahi koleksi mainan edukasi dan hiburan terbaik. Dapatkan rekomendasi produk serupa yang disesuaikan dengan kesenangan si kecil.
+        </p>
 
-            <p class="text-gray-500 text-lg">
-                Cari produk mainan terbaik dan dapatkan rekomendasi produk serupa.
-            </p>
-
-        </div>
-
-    </section>
-
-    <!-- SEARCH -->
-    <section class="container mx-auto mt-10 px-4">
-
-        <form
-            action="/search"
-            method="GET"
-            class="bg-white p-6 rounded-2xl shadow-lg"
+        <!-- Modern Search & CTA Section -->
+        <form 
+            action="/search" 
+            method="GET" 
+            class="flex flex-col sm:flex-row items-center gap-4 max-w-2xl mx-auto w-full"
         >
-
-            <div class="flex gap-4">
-
+            <!-- Input Field with Icon -->
+            <div class="relative w-full group">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                
+                <!-- Search Input dengan id="search-bar" -->
                 <input
+                    id="search-bar"
                     type="text"
                     name="query"
-                    placeholder="Cari produk..."
-                    class="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Cari produk mainan (misal: lego, boneka...)"
+                    class="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400 focus:bg-white transition-all duration-300 shadow-sm"
+                    required
+                    autocomplete="off"
                 >
 
-                <button
-                    type="submit"
-                    class="bg-blue-600 text-white px-8 rounded-xl hover:bg-blue-700"
+                <!-- Suggestion Dropdown dengan id="suggestion-dropdown" -->
+                <div 
+                    id="suggestion-dropdown" 
+                    class="hidden absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-50"
                 >
-                    Search
-                </button>
-
+                    <!-- Suggestion List dengan id="suggestion-list" -->
+                    <ul id="suggestion-list" class="py-2">
+                        <!-- Suggestions akan dimuat di sini oleh JavaScript -->
+                    </ul>
+                </div>
             </div>
 
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2"
+            >
+                <span>Cari</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
         </form>
+    </div>
+</section>
 
-    </section>
+    <!-- SEARCH -->
 
     <!-- PRODUCT -->
     <section class="container mx-auto mt-10 px-4 mb-20">
-
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
             {% for product in products %}
 
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 duration-300">
+            <div
+                class="bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 group"
+                data-url="{{ url_for('recommendation.recommend', product_name=product.product_name) }}"
+                onclick="window.location.href=this.dataset.url"
+            >
 
-                <!-- IMAGE -->
-                {% if 'Vehicle' in product.sub_category %}
+                <!-- IMAGE CONTAINER -->
+                <div class="relative h-56 bg-gray-50 overflow-hidden">
+                    {% if 'Vehicle' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/vehicle.jpg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/vehicle.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% elif 'Educational' in product.sub_category %}
+                    {% elif 'Educational' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/educational.jpg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/educational.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% elif 'Doll' in product.sub_category %}
+                    {% elif 'Doll' in product.sub_category %}
 
-                <img
-                    src="{{ url_for('static', filename='images/doll.jpg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/doll.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% else %}
+                    {% else %}
 
-                <img
-                    src="{{ url_for('static', filename='images/default.jpg') }}"
-                    class="w-full h-56 object-cover"
-                >
+                    <img
+                        src="{{ url_for('static', filename='images/default.svg') }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    >
 
-                {% endif %}
+                    {% endif %}
+                </div>
 
                 <!-- CONTENT -->
-                <div class="p-5">
+                <div class="p-4">
 
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">
+                    <!-- PRODUCT NAME & BRAND -->
+                    <h3 class="text-base font-semibold text-gray-900 line-clamp-2 mb-1">
                         {{ product.product_name }}
-                    </h2>
-
-                    <p class="text-gray-500">
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">
                         {{ product.brand }}
                     </p>
-                    <div class="flex items-center gap-3 mt-3">
 
-                    <!-- RATING -->
-                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                        ⭐ {{ product.average_rating if product.average_rating else 0 }}
-                    </span>
-
-                    <!-- TOTAL PURCHASE -->
-                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
-                        🔥 Dibeli {{ product.total_purchased }}x
-                    </span>
-
+                    <!-- STATS ROW -->
+                    <div class="flex gap-2 mb-3 text-xs">
+                        <div class="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-md">
+                            <span>⭐</span>
+                            <span class="font-semibold text-yellow-700">{{ product.average_rating if product.average_rating else 0 }}</span>
+                        </div>
+                        <div class="flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md">
+                            <span>🔥</span>
+                            <span class="font-semibold text-red-700">{{ product.total_purchased }}</span>
+                        </div>
                     </div>
-                    <div class="mt-3">
 
-                        <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
+                    <!-- CATEGORY BADGES -->
+                    <div class="flex gap-2 flex-wrap mb-4 text-xs">
+                        <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md font-medium">
                             {{ product.category }}
                         </span>
-
-                    </div>
-
-                    <div class="mt-3">
-
-                        <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">
+                        <span class="bg-green-50 text-green-700 px-2 py-1 rounded-md font-medium">
                             {{ product.sub_category }}
                         </span>
-
                     </div>
 
-                    <h3 class="text-2xl font-bold text-blue-600 mt-5">
-                        Rp {{ product.price }}
-                    </h3>
+                    <!-- DIVIDER -->
+                    <div class="border-t border-gray-100 pt-3 mb-3"></div>
 
-                    <a href="/recommend/{{ product.product_name }}">
+                    <!-- PRICE -->
+                    <h4 class="text-xl font-bold text-blue-600 mb-3">
+                        $ {{ product.price }}
+                    </h4>
 
+                    <!-- BUY BUTTON -->
+                    <a
+                        href="{{ url_for('purchase.buy', product_id=product.product_id) }}"
+                        onclick="event.stopPropagation()"
+                        class="w-full"
+                    >
                         <button
-                            class="mt-5 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700"
+                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm"
                         >
-                            Lihat Rekomendasi
+                            🛒 Beli
                         </button>
-
                     </a>
 
                 </div>
@@ -187,6 +220,6 @@
         </div>
 
     </section>
-
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>
